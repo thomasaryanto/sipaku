@@ -77,10 +77,6 @@ function konfirmasi(){
         Username: uname,
         Pool: userPool,
     };
-
-    console.log(uname);
-    console.log(kode);
-    console.log(userData);
     
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
     cognitoUser.confirmRegistration(kode, true, function(err, result) {
