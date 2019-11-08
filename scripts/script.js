@@ -124,3 +124,18 @@ function getParameterByName(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
+function getToken(){
+    var cognitoUser = userPool.getCurrentUser();
+    if (cognitoUser != null) {
+        cognitoUser.getSession(function(err, session) {
+            if (err) {
+                alert(err.message || JSON.stringify(err));
+                return;
+            }
+            console.log('session token: ' + session.getIdToken().getJwtToken());
+            
+            return session.getIdToken().getJwtToken();
+        });
+    }
+}
