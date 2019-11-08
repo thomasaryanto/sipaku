@@ -125,7 +125,7 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-function getToken(){
+function getData(){
     var cognitoUser = userPool.getCurrentUser();
     if (cognitoUser != null) {
         cognitoUser.getSession(function(err, session) {
@@ -135,7 +135,81 @@ function getToken(){
             }
             console.log('session token: ' + session.getIdToken().getJwtToken());
             
-            return session.getIdToken().getJwtToken();
+            $.ajax({
+                url: "https://5zij6j6dg8.execute-api.us-east-1.amazonaws.com/SIPAKU/getudara",
+                method: "POST",
+                crossDomain: true,
+                headers: {
+                    Authorization: session.getIdToken().getJwtToken()
+                },
+                success: function(data) {
+                    var Time = [];
+                    var Value = [];
+                    var Timestamp =[];
+        
+                    for(var i in data) {
+                        Time.push(data[i].Time);
+                        Value.push(data[i].Value);
+                        Timestamp.push(data[i].Timestamp);
+                    }
+        
+                    var chartdata = {
+                        labels: Time,
+                        
+                        datasets : [
+                        {   
+                            label: 'Air Quality',
+                            backgroundColor: 'rgba(0, 119, 204, 0.3)',
+                            borderColor: 'rgba(200, 200, 200, 0.75)',
+                            hoverBackgroundColor: 'rgba(200, 200, 200, 1)',
+                            hoverBorderColor: 'rgba(200, 200, 200, 1)',
+                            data: Value
+                        }]
+                    };
+        
+                    var ctx = $("#canvas");
+        
+                    var barGraph = new Chart(ctx, {
+                        type: 'line',
+                        data: chartdata,
+                        options: {
+                            responsive: true,
+                            title: {
+                                display: true,
+                                text: 'Air Quality Monitoring System Per '+Timestamp[0],
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                            hover: {
+                                mode: 'nearest',
+                                intersect: true
+                            },
+                            scales: {
+                                xAxes: [{
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Time'
+                                    }
+                                }],
+                                yAxes: [{
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Air Quality Value'
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                },
+                error: function(err) {
+                    alert("Terjadi kesalahan saat mengambil data udara!");
+                }
+            });
+            
         });
     }
 }
