@@ -125,8 +125,50 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+function getTanggal(){
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + '-' + mm + '-' + dd;
+    return "2019-11-12";
+    //return today;
+}
+
+function getWaktu(){
+    var d = new Date();
+    var jam = d.getHours();
+    var menit = d.getMinutes();
+    var detik = d.getSeconds();
+
+    time = jam + ':' + menit + ':' + detik;
+    return time;
+}
+
+function getHasil(value, data){
+    var tanggal = getTanggal();
+    var waktu = getWaktu();
+
+    var rata2 = Math.round(value / data);
+    var hasil;
+
+    if (rata2 >= 0 && rata2 <= 500){
+        hasil = '<button type="button" class="btn btn-success">BAIK <span class="badge badge-light">'+ rata2 +'</span></button>';
+    }
+    else if (rata2 >= 501 && rata2 <= 1000){
+        hasil = '<button type="button" class="btn btn-warning">SEDANG <span class="badge badge-light">'+ rata2 +'</span></button>';
+    }
+    else {
+        hasil = '<button type="button" class="btn btn-danger">BURUK <span class="badge badge-light">'+ rata2 +'</span></button>';
+    }
+    console.log(hasil);
+    $("#hasil").html('<span class="badge badge-primary">'+ tanggal +'</span> <span class="badge badge-info">'+ waktu +'</span> <br><br> ' + hasil);
+}
+
 function getData(){
     var cognitoUser = userPool.getCurrentUser();
+    var tanggal = getTanggal();
     if (cognitoUser != null) {
         cognitoUser.getSession(function(err, session) {
             if (err) {
@@ -134,27 +176,32 @@ function getData(){
                 return;
             }
             console.log('session token: ' + session.getIdToken().getJwtToken());
-            
             $.ajax({
                 url: "https://5zij6j6dg8.execute-api.us-east-1.amazonaws.com/SIPAKU/getudara",
                 method: "POST",
+                data: JSON.stringify({"tanggal" : tanggal}),
                 crossDomain: true,
                 headers: {
                     Authorization: session.getIdToken().getJwtToken()
                 },
                 success: function(data) {
-                    var Time = [];
+                    var Waktu = [];
                     var Value = [];
-                    var Timestamp =[];
+                    var Tanggal = [];
+
+                    var Jumlah_Value = 0;
+                    var Jumlah_Data = 0;
         
                     for(var i in data) {
-                        Time.push(data[i].Time);
+                        Waktu.push(data[i].Waktu);
                         Value.push(data[i].Value);
-                        Timestamp.push(data[i].Timestamp);
+                        Tanggal.push(data[i].Tanggal);
+                        Jumlah_Value = Jumlah_Value + data[i].Value;
+                        Jumlah_Data = Jumlah_Data + 1;
                     }
         
                     var chartdata = {
-                        labels: Time,
+                        labels: Waktu,
                         
                         datasets : [
                         {   
@@ -168,16 +215,12 @@ function getData(){
                     };
         
                     var ctx = $("#canvas");
-        
                     var barGraph = new Chart(ctx, {
                         type: 'line',
                         data: chartdata,
                         options: {
                             responsive: true,
-                            title: {
-                                display: true,
-                                text: 'Air Quality Monitoring System Per '+Timestamp[0],
-                            },
+                            maintainAspectRatio: false,
                             tooltips: {
                                 mode: 'index',
                                 intersect: false,
@@ -199,11 +242,18 @@ function getData(){
                                     scaleLabel: {
                                         display: true,
                                         labelString: 'Air Quality Value'
+                                    },
+                                    ticks: {
+                                        max: 1000,
+                                        min: 0,
+                                        stepSize: 200
                                     }
                                 }]
                             }
                         }
                     });
+                    console.log(data);
+                    getHasil(Jumlah_Value, Jumlah_Data);
                 },
                 error: function(err) {
                     alert("Terjadi kesalahan saat mengambil data udara!");
@@ -213,3 +263,5 @@ function getData(){
         });
     }
 }
+
+setInterval(getData, 10000);
