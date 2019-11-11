@@ -132,8 +132,8 @@ function getTanggal(){
     var yyyy = today.getFullYear();
 
     today = yyyy + '-' + mm + '-' + dd;
-    return "2019-11-12";
-    //return today;
+    //return "2019-11-12";
+    return today;
 }
 
 function getWaktu(){
