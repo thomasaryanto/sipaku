@@ -2,7 +2,7 @@ var userPoolId = 'us-east-1_yZruguFbj'
 var clientId = '1kl3k4putbms4hp9fsbqf41h3k'
 
 var poolData = { UserPoolId : userPoolId,
-ClientId : clientId
+    ClientId : clientId
 };
 
 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
@@ -132,7 +132,7 @@ function getTanggal(){
     var yyyy = today.getFullYear();
 
     today = yyyy + '-' + mm + '-' + dd;
-    //return "2019-11-12";
+    //return "2019-11-18";
     return today;
 }
 
@@ -281,7 +281,54 @@ function getPrediksi(){
                 },
                 success: function(data) {
                     //UBAH BAGIAN SINI, MASUKIN DATA KE TABLE
+                    var st = JSON.stringify(data[0]['DateCreated']);
+                    var pattern = /(\d{2})\-(\d{2})\-(\d{4})/;
                     
+                    var now = getTanggal();
+                    var date_last = new Date(st.replace(pattern,'$3-$2-$1'));
+                    var date_now = new Date(now + " 00:00:00");
+
+                    const diffTime = Math.abs(date_now - date_last);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    
+                    if(diffDays >= 6){
+                        $('#btnPrediksi').prop("disabled", false);
+                    }
+                    else {
+                        $('#btnPrediksi').prop("disabled", true);
+                    }
+
+                    $("#testdata").html(date_now + date_last);
+                },
+                error: function(err) {
+                    alert("Terjadi kesalahan saat mengambil data prediksi!");
+                }
+            });
+            
+        });
+    }
+}
+
+function mulaiPrediksi(){
+    var cognitoUser = userPool.getCurrentUser();
+    var tanggal = getTanggal();
+    if (cognitoUser != null) {
+        cognitoUser.getSession(function(err, session) {
+            if (err) {
+                alert(err.message || JSON.stringify(err));
+                return;
+            }
+            console.log('session token: ' + session.getIdToken().getJwtToken());
+            $.ajax({
+                url: "https://5zij6j6dg8.execute-api.us-east-1.amazonaws.com/SIPAKU/mulaiprediksi",
+                method: "POST",
+                crossDomain: true,
+                headers: {
+                    Authorization: session.getIdToken().getJwtToken()
+                },
+                success: function(data) {
+                    //UBAH BAGIAN SINI, MASUKIN DATA KE TABLE
+                    getPrediksi();
                     $("#testdata").html(JSON.stringify(data));
                 },
                 error: function(err) {
@@ -292,3 +339,4 @@ function getPrediksi(){
         });
     }
 }
+
