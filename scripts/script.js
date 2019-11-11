@@ -284,79 +284,87 @@ function getPrediksi(){
                     var Average = [];
                     var Tanggal = [];
 
-                    $("#testdata").html(JSON.stringify(data));
+                    console.log(data);
+                    
+                    if(data != ""){
 
-                    for(var i in data[0].PredictData) {
-                        Average.push(data[0].PredictData[i].Average);
-                        Tanggal.push(data[0].PredictData[i].Tanggal);
-                    }
-         
-                    var chartdata = {
-                        labels: Tanggal,
-                        
-                        datasets : [
-                        {   
-                            label: 'Prediction Air Quality',
-                            backgroundColor: 'rgba(0, 119, 204, 0.3)',
-                            borderColor: 'rgba(200, 200, 200, 0.75)',
-                            hoverBackgroundColor: 'rgba(200, 200, 200, 1)',
-                            hoverBorderColor: 'rgba(200, 200, 200, 1)',
-                            data: Average
-                        }]
-                    };
-        
-                    var ctx = $("#canvas2");
-                    var barGraph = new Chart(ctx, {
-                        type: 'line',
-                        data: chartdata,
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            tooltips: {
-                                mode: 'index',
-                                intersect: false,
-                            },
-                            hover: {
-                                mode: 'nearest',
-                                intersect: true
-                            },
-                            scales: {
-                                xAxes: [{
-                                    display: true,
-                                    scaleLabel: {
-                                        display: true,
-                                        labelString: 'Date'
-                                    }
-                                }],
-                                yAxes: [{
-                                    display: true,
-                                    scaleLabel: {
-                                        display: true,
-                                        labelString: 'Average Air Quality'
-                                    }
-                                }]
-                            }
+                        for(var i in data[0].PredictData) {
+                            Average.push(data[0].PredictData[i].Average);
+                            Tanggal.push(data[0].PredictData[i].Tanggal);
                         }
-                    });
-                    
-                    var st = JSON.stringify(data[0]['DateCreated']);
-                    var pattern = /(\d{2})\-(\d{2})\-(\d{4})/;
-                    
-                    var now = getTanggal();
-                    var date_last = new Date(st.replace(pattern,'$3-$2-$1'));
-                    var date_now = new Date(now + " 00:00:00");
+            
+                        var chartdata = {
+                            labels: Tanggal,
+                            
+                            datasets : [
+                            {   
+                                label: 'Prediction Air Quality',
+                                backgroundColor: 'rgba(0, 119, 204, 0.3)',
+                                borderColor: 'rgba(200, 200, 200, 0.75)',
+                                hoverBackgroundColor: 'rgba(200, 200, 200, 1)',
+                                hoverBorderColor: 'rgba(200, 200, 200, 1)',
+                                data: Average
+                            }]
+                        };
+            
+                        var ctx = $("#canvas2");
+                        var barGraph = new Chart(ctx, {
+                            type: 'line',
+                            data: chartdata,
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                tooltips: {
+                                    mode: 'index',
+                                    intersect: false,
+                                },
+                                hover: {
+                                    mode: 'nearest',
+                                    intersect: true
+                                },
+                                scales: {
+                                    xAxes: [{
+                                        display: true,
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Date'
+                                        }
+                                    }],
+                                    yAxes: [{
+                                        display: true,
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Average Air Quality'
+                                        }
+                                    }]
+                                }
+                            }
+                        });
 
-                    const diffTime = Math.abs(date_now - date_last);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                    
-                    if(diffDays >= 6){
-                        $('#btnPrediksi').prop("disabled", false);
+                        var st = JSON.stringify(data[0]['DateCreated']);
+                        var pattern = /(\d{2})\-(\d{2})\-(\d{4})/;
+                        
+                        var now = getTanggal();
+                        var date_last = new Date(st.replace(pattern,'$3-$2-$1'));
+                        var date_now = new Date(now + " 00:00:00");
+
+                        const diffTime = Math.abs(date_now - date_last);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                        
+                        if(diffDays >= 6){
+                            $('#btnPrediksi').prop("disabled", false);
+                            $("#btnPrediksi").prop('value', 'MULAI PREDIKSI');
+                        }
+                        else {
+                            $('#btnPrediksi').prop("disabled", true);
+                            $("#btnPrediksi").prop('value', 'PREDIKSI SELESAI PADA '+st);
+                        }
                     }
                     else {
-                        $('#btnPrediksi').prop("disabled", true);
+                        $('#btnPrediksi').prop("disabled", false);
+                        $("#btnPrediksi").prop('value', 'MULAI PREDIKSI');
                     }
 
-                    $("#testdata").html(date_now + date_last);
                 },
                 error: function(err) {
                     alert("Terjadi kesalahan saat mengambil data prediksi!");
