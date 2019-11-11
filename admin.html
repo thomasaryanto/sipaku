@@ -9,6 +9,25 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="scripts/Chart.min.js"></script>
     <script src="scripts/utils.js"></script>
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+
+        .button {background-color: #008CBA;} /* Blue */
+        </style>
 </head>
 <body id="body" style="visibility:hidden">
     <!-- nav bar-->
@@ -20,9 +39,7 @@
             </a>
         </div>
         <div class="collapse navbar-collapse" id="Navbar">
-                <ul class="navbar-nav ml-auto nav">
-                    <li class="nav-list"><button class="btn btn-red btn-nav" onclick="">Prediksi</button></li>
-                </ul>&nbsp
+                
                 <ul class="navbar-nav ml-auto nav">
                     <li class="nav-list"><button class="btn btn-dark btn-nav" onclick="logOut();">Keluar</button></li>
                 </ul>
@@ -40,7 +57,10 @@
                     </div>
                     <br>
                     <center>
-                        <div id="hasil"></div>
+                        <!--<div id="hasil"></div>-->
+                        <ul class="navbar-nav ml-auto nav">
+                                <li class="nav-list"><button class="btn btn-dark btn-nav" onclick="">PREDIKSI</button></li>
+                            </ul>
                         <br>
                     </center>
                 </div>
@@ -49,8 +69,50 @@
         </div>
 
         <div style="width:100%; height:400px;">
-            <canvas id="canvas"></canvas>
-            <div id="chartContainer" ></div>
+            <table>	
+                <tr>
+                 <th>No</th>
+                  <th>Company</th>
+                  <th>Contact</th>
+                  <th>Country</th>
+                </tr>
+                <tr>
+                <td>1</td>
+                  <td>Alfreds Futterkiste</td>
+                  <td>Maria Anders</td>
+                  <td>Germany</td>
+                </tr>
+                <tr>
+                <td>1</td>
+                  <td>Centro comercial Moctezuma</td>
+                  <td>Francisco Chang</td>
+                  <td>Mexico</td>
+                </tr>
+                <tr>
+                <td>1</td>
+                  <td>Ernst Handel</td>
+                  <td>Roland Mendel</td>
+                  <td>Austria</td>
+                </tr>
+                <tr>
+                <td>1</td>
+                  <td>Island Trading</td>
+                  <td>Helen Bennett</td>
+                  <td>UK</td>
+                </tr>
+                <tr>
+                <td>1</td>
+                  <td>Laughing Bacchus Winecellars</td>
+                  <td>Yoshi Tannamuri</td>
+                  <td>Canada</td>
+                </tr>
+                <tr>
+                <td>1</td>
+                  <td>Magazzini Alimentari Riuniti</td>
+                  <td>Giovanni Rovelli</td>
+                  <td>Italy</td>
+                </tr>
+              </table>
         </div>
         <br>
         <br>

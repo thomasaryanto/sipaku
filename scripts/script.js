@@ -264,4 +264,4 @@ function getData(){
     }
 }
 
-setInterval(getData, 300000);
+setInterval(getData, 10000);
