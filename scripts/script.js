@@ -107,6 +107,15 @@ function checkLogin(redirectOnRec, redirectOnUnrec){
     }
 }
 
+function checkAdmin(){
+
+    var cognitoUser = userPool.getCurrentUser();
+    if (cognitoUser.username != "admin") {
+        alert("Access denied!");
+        window.location = './index.html';
+    }
+}
+
 function logOut() {
     
     var cognitoUser = userPool.getCurrentUser();
