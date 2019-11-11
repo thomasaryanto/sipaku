@@ -162,11 +162,10 @@ function getHasil(value, data){
     else {
         hasil = '<button type="button" class="btn btn-danger">BURUK <span class="badge badge-light">'+ rata2 +'</span></button>';
     }
-    console.log(hasil);
     $("#hasil").html('<span class="badge badge-primary">'+ tanggal +'</span> <span class="badge badge-info">'+ waktu +'</span> <br><br> ' + hasil);
 }
 
-function getData(){
+function getUdara(){
     var cognitoUser = userPool.getCurrentUser();
     var tanggal = getTanggal();
     if (cognitoUser != null) {
@@ -252,7 +251,6 @@ function getData(){
                             }
                         }
                     });
-                    console.log(data);
                     getHasil(Jumlah_Value, Jumlah_Data);
                 },
                 error: function(err) {
@@ -264,4 +262,33 @@ function getData(){
     }
 }
 
-setInterval(getData, 10000);
+function getPrediksi(){
+    var cognitoUser = userPool.getCurrentUser();
+    var tanggal = getTanggal();
+    if (cognitoUser != null) {
+        cognitoUser.getSession(function(err, session) {
+            if (err) {
+                alert(err.message || JSON.stringify(err));
+                return;
+            }
+            console.log('session token: ' + session.getIdToken().getJwtToken());
+            $.ajax({
+                url: "https://5zij6j6dg8.execute-api.us-east-1.amazonaws.com/SIPAKU/getprediksi",
+                method: "POST",
+                crossDomain: true,
+                headers: {
+                    Authorization: session.getIdToken().getJwtToken()
+                },
+                success: function(data) {
+                    //UBAH BAGIAN SINI, MASUKIN DATA KE TABLE
+                    
+                    $("#testdata").html(JSON.stringify(data));
+                },
+                error: function(err) {
+                    alert("Terjadi kesalahan saat mengambil data prediksi!");
+                }
+            });
+            
+        });
+    }
+}
