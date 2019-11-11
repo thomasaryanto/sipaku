@@ -164,6 +164,7 @@ function getHasil(value, data){
     }
     console.log(hasil);
     $("#hasil").html('<span class="badge badge-primary">'+ tanggal +'</span> <span class="badge badge-info">'+ waktu +'</span> <br><br> ' + hasil);
+    $("#hasil2").html('<span class="badge badge-primary">'+ tanggal +'</span> <span class="badge badge-info">'+ waktu +'</span> <br><br> ');
 }
 
 function getData(){
