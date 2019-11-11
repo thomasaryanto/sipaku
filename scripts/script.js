@@ -163,6 +163,7 @@ function getHasil(value, data){
         hasil = '<button type="button" class="btn btn-danger">BURUK <span class="badge badge-light">'+ rata2 +'</span></button>';
     }
     $("#hasil").html('<span class="badge badge-primary">'+ tanggal +'</span> <span class="badge badge-info">'+ waktu +'</span> <br><br> ' + hasil);
+    $("#hasil2").html('<span class="badge badge-primary">'+ tanggal +'</span> <span class="badge badge-info">'+ waktu +'</span> <br><br> ');
 }
 
 function getUdara(){
@@ -280,7 +281,64 @@ function getPrediksi(){
                     Authorization: session.getIdToken().getJwtToken()
                 },
                 success: function(data) {
-                    //UBAH BAGIAN SINI, MASUKIN DATA KE TABLE
+                    var Average = [];
+                    var Tanggal = [];
+
+                    $("#testdata").html(JSON.stringify(data));
+
+                    for(var i in data[0].PredictData) {
+                        Average.push(data[0].PredictData[i].Average);
+                        Tanggal.push(data[0].PredictData[i].Tanggal);
+                    }
+         
+                    var chartdata = {
+                        labels: Tanggal,
+                        
+                        datasets : [
+                        {   
+                            label: 'Prediction Air Quality',
+                            backgroundColor: 'rgba(0, 119, 204, 0.3)',
+                            borderColor: 'rgba(200, 200, 200, 0.75)',
+                            hoverBackgroundColor: 'rgba(200, 200, 200, 1)',
+                            hoverBorderColor: 'rgba(200, 200, 200, 1)',
+                            data: Average
+                        }]
+                    };
+        
+                    var ctx = $("#canvas2");
+                    var barGraph = new Chart(ctx, {
+                        type: 'line',
+                        data: chartdata,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            tooltips: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                            hover: {
+                                mode: 'nearest',
+                                intersect: true
+                            },
+                            scales: {
+                                xAxes: [{
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Date'
+                                    }
+                                }],
+                                yAxes: [{
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Average Air Quality'
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    
                     var st = JSON.stringify(data[0]['DateCreated']);
                     var pattern = /(\d{2})\-(\d{2})\-(\d{4})/;
                     
@@ -329,8 +387,9 @@ function mulaiPrediksi(){
                 success: function(data) {
                     //UBAH BAGIAN SINI, MASUKIN DATA KE TABLE
                     getPrediksi();
-                    $("#testdata").html(JSON.stringify(data));
+                    
                 },
+
                 error: function(err) {
                     alert("Terjadi kesalahan saat mengambil data prediksi!");
                 }
