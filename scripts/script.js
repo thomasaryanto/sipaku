@@ -501,3 +501,54 @@ function getPrediksiIndex(){
     }
 }
 
+function getUdaraYear(){
+    var cognitoUser = userPool.getCurrentUser();
+    var tanggal = getTanggal();
+    if (cognitoUser != null) {
+        cognitoUser.getSession(function(err, session) {
+            if (err) {
+                alert(err.message || JSON.stringify(err));
+                return;
+            }
+            console.log('session token: ' + session.getIdToken().getJwtToken());
+            $.ajax({
+                url: 'https://5zij6j6dg8.execute-api.us-east-1.amazonaws.com/SIPAKU/getudarayear',
+                method: "POST",
+                crossDomain: true,
+                headers: {
+                    Authorization: session.getIdToken().getJwtToken()
+                },
+                success: function(data) {
+                    // res = JSON.parse(data);
+                    cal_data = JSON.parse(data.body);
+         
+                    var calendar = new CalHeatMap();
+                    calendar.init({
+                        data: cal_data,
+                        start: new Date(2019, 0),
+                        // id : "graph_k",
+                        itemSelector: '#cal-heatmap',
+                        domain : "month",
+                        subDomain : "day",
+                        range : 12,
+                        cellsize: 15,
+                        cellpadding: 3,
+                        cellradius: 5,
+                        domainGutter: 15,
+                        weekStartOnMonday: 0,
+                        legend: [400.00, 600.00, 800.00, 1000.00, 1500.00],
+                        legendColors: {
+                            min: "green",
+                            max: "red",
+                            empty: "white"
+                            // Will use the CSS for the missing keys
+                        }
+                    });
+                    calendar
+                } 
+            });
+            
+        });
+    }
+}
+
