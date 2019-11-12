@@ -315,7 +315,7 @@ function getPrediksi(){
                     if(data != ""){
 
                         for(var i in data[0].PredictData) {
-                            Average.push(data[0].PredictData[i].Average);
+                            Average.push(Math.round(data[0].PredictData[i].Average));
                             Tanggal.push(data[0].PredictData[i].Tanggal);
                         }
             
@@ -419,9 +419,7 @@ function mulaiPrediksi(){
                     Authorization: session.getIdToken().getJwtToken()
                 },
                 success: function(data) {
-                    //UBAH BAGIAN SINI, MASUKIN DATA KE TABLE
                     getPrediksi();
-                    
                 },
 
                 error: function(err) {
@@ -432,6 +430,38 @@ function mulaiPrediksi(){
         });
     }
 }
+
+function mulaiModel(){
+    var cognitoUser = userPool.getCurrentUser();
+    var tanggal = getTanggal();
+    if (cognitoUser != null) {
+        cognitoUser.getSession(function(err, session) {
+            if (err) {
+                alert(err.message || JSON.stringify(err));
+                return;
+            }
+            console.log('session token: ' + session.getIdToken().getJwtToken());
+            $.ajax({
+                url: "https://5zij6j6dg8.execute-api.us-east-1.amazonaws.com/SIPAKU/mulaimodel",
+                method: "POST",
+                crossDomain: true,
+                headers: {
+                    Authorization: session.getIdToken().getJwtToken()
+                },
+                success: function(data) {
+                    console.log("MEMPROSES PEMBUATAN MODEL...");
+                    mulaiPrediksi();
+                },
+
+                error: function(err) {
+                    alert("Terjadi kesalahan saat membuat model prediksi!");
+                }
+            });
+            
+        });
+    }
+}
+
 
 function getPrediksiIndex(){
     var cognitoUser = userPool.getCurrentUser();
