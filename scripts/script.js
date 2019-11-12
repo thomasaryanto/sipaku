@@ -175,6 +175,23 @@ function getHasil(value, data){
     $("#hasil2").html('<span class="badge badge-primary">'+ tanggal +'</span> <span class="badge badge-info">'+ waktu +'</span> <br><br> ');
 }
 
+function getHasilPrediksi(value){
+    
+    var rata2 = Math.round(value);
+    var hasil;
+
+    if (rata2 >= 0 && rata2 <= 500){
+        hasil = '<button type="button" class="btn btn-success">BAIK <span class="badge badge-light">'+ rata2 +'</span></button>';
+    }
+    else if (rata2 >= 501 && rata2 <= 1000){
+        hasil = '<button type="button" class="btn btn-warning">SEDANG <span class="badge badge-light">'+ rata2 +'</span></button>';
+    }
+    else {
+        hasil = '<button type="button" class="btn btn-danger">BURUK <span class="badge badge-light">'+ rata2 +'</span></button>';
+    }
+    return hasil;
+}
+
 function getUdara(){
     var cognitoUser = userPool.getCurrentUser();
     var tanggal = getTanggal();
@@ -407,6 +424,44 @@ function mulaiPrediksi(){
                     
                 },
 
+                error: function(err) {
+                    alert("Terjadi kesalahan saat mengambil data prediksi!");
+                }
+            });
+            
+        });
+    }
+}
+
+function getPrediksiIndex(){
+    var cognitoUser = userPool.getCurrentUser();
+    var tanggal = getTanggal();
+    if (cognitoUser != null) {
+        cognitoUser.getSession(function(err, session) {
+            if (err) {
+                alert(err.message || JSON.stringify(err));
+                return;
+            }
+            console.log('session token: ' + session.getIdToken().getJwtToken());
+            $.ajax({
+                url: "https://5zij6j6dg8.execute-api.us-east-1.amazonaws.com/SIPAKU/getprediksi",
+                method: "POST",
+                crossDomain: true,
+                headers: {
+                    Authorization: session.getIdToken().getJwtToken()
+                },
+                success: function(data) {
+                    
+                    var trHTML = '';
+                    for(var i in data[0].PredictData) {
+                        var hasilprediksi= getHasilPrediksi(data[0].PredictData[i].Average);
+                        trHTML += '<tr><td style="text-align:center">' + data[0].PredictData[i].Tanggal + '</td><td style="text-align:center">' + data[0].PredictData[i].Average + '</td><td style="text-align:center">' + hasilprediksi + '</td></tr>';
+                    };
+                    $('#records_table').append(trHTML);
+
+                    console.log(data);
+                },
+                
                 error: function(err) {
                     alert("Terjadi kesalahan saat mengambil data prediksi!");
                 }
