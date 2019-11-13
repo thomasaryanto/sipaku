@@ -145,6 +145,14 @@ function getTanggal(){
     return today;
 }
 
+function getTahun(){
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    
+    today = yyyy;
+    return 'Kualitas udara tahun '+today;
+}
+
 function getWaktu(){
     var d = new Date();
     var jam = d.getHours();
@@ -195,6 +203,7 @@ function getHasilPrediksi(value){
 function getUdara(){
     var cognitoUser = userPool.getCurrentUser();
     var tanggal = getTanggal();
+    var tahun = getTahun();
     if (cognitoUser != null) {
         cognitoUser.getSession(function(err, session) {
             if (err) {
@@ -279,6 +288,7 @@ function getUdara(){
                         }
                     });
                     getHasil(Jumlah_Value, Jumlah_Data);
+                    $("#tahun").html(tahun)
                 },
                 error: function(err) {
                     alert("Terjadi kesalahan saat mengambil data udara!");
